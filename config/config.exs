@@ -15,7 +15,8 @@ config :ping_pong, PingPongWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "7zXpASeoPyI9D+QaV5lFbJhefCeWGhG2aOFJ3P295kII0wMDgw6EfUwieGQxjBe0",
   render_errors: [view: PingPongWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: PingPong.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: PingPong.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [signing_salt: "FfSMVlgoqth-ExKB"]
 
 # Configures Elixir's Logger
 config :logger, :console,
