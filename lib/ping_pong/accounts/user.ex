@@ -2,6 +2,8 @@ defmodule PingPong.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:id, :name]}
+
   schema "users" do
     field :name, :string
     field :tag, Ecto.UUID

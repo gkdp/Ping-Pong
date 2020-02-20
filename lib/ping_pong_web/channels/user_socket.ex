@@ -3,6 +3,7 @@ defmodule PingPongWeb.UserSocket do
 
   ## Channels
   # channel "room:*", PingPongWeb.RoomChannel
+  channel "match:*", PingPongWeb.MatchChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

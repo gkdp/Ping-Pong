@@ -1,3 +1,166 @@
 /* This file is for your main application css. */
 
-@import "./phoenix.css";
+*,*:after,*:before{box-sizing:inherit}html{box-sizing:border-box;font-size:62.5%}body{color:#000000;font-family:'Helvetica', 'Arial', sans-serif;font-size:1.6em;font-weight:300;line-height:1.6}
+
+html {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+/*
+#app,
+.page,
+.container,
+.switch-wrapper,
+.players {
+    height: 100vh;
+} */
+
+.page {
+    min-height: 250px;
+    height: 75vh;
+}
+
+.page .container,
+.page .players {
+    height: 100%;
+}
+
+.switch-wrapper > div {
+    width: 100%;
+    overflow: hidden;
+}
+
+.players {
+    display: flex;
+}
+
+.player {
+    height: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: flex-end; */
+    position: relative;
+}
+
+.photo {
+    width: 50%;
+    height: 75%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: bottom;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-left: -25%;
+
+    filter: grayscale(90%);
+    opacity: 0.3;
+}
+
+.score {
+    font-family: 'Bowlby One SC', cursive;
+    color: #fff;
+    font-size: 6rem;
+    font-weight: 500;
+    margin: 1rem auto 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.info {
+    font-size: 2rem;
+    color: #fff;
+    padding: 2rem;
+}
+
+.intro {
+    padding: 3rem;
+    background: #2e2e2e;
+    color: #fff;
+    position: absolute;
+    width: 200%;
+    z-index: 10;
+    text-align: center;
+    font-size: 2.5rem;
+    transform: rotate(-7.5deg) translate(0, -50%);
+    left: -50%;
+    top: 50%;
+    margin-top: -2rem;
+    display: none;
+}
+
+.won {
+    background: #fff; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.intro .text {
+    transform: skew(-7.5deg);
+}
+
+.ping {
+    background: #f953c6;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to top, #b91d73, #f953c6);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to top, #b91d73, #f953c6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.ping .info {
+    background: #910e56;
+}
+
+.pong {
+    background: #2193b0;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom, #6dd5ed, #2193b0);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom, #6dd5ed, #2193b0); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.pong .info {
+    background: #0d6e86;
+}
+
+.switch-wrapper {
+    position: relative;
+}
+
+.switch-wrapper > div {
+    position: absolute;
+}
+
+.scaled {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.highscore {
+    background: #000000;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #434343, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+/* Nice fix */
+body {
+    display: flex;
+}
+
+#app {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.highscore {
+    flex: 1;
+}

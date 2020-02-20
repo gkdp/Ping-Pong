@@ -6,14 +6,19 @@ defmodule PingPong.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec
+
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
       PingPong.Repo,
       # Start the endpoint when the application starts
-      PingPongWeb.Endpoint
+      PingPongWeb.Endpoint,
       # Starts a worker by calling: PingPong.Worker.start_link(arg)
       # {PingPong.Worker, arg},
+
+      worker(PingPong.Notifications, ["matches_changes"], id: :matches_changes),
+      worker(PingPong.Notifications, ["points_changes"], id: :points_changes)
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
