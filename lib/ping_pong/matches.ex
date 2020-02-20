@@ -9,6 +9,10 @@ defmodule PingPong.Matches do
   alias PingPong.Matches.Match
   alias PingPong.Matches.Point
 
+  alias PingPong.Championships.Rule
+
+  alias PingPong.Accounts.User
+
   @doc """
   Gets a single match.
 
@@ -59,7 +63,7 @@ defmodule PingPong.Matches do
         where: m.id == ^id,
         distinct: true,
         select: {m, count(ping.id, :distinct), count(pong.id, :distinct)},
-        preload: [:ping, :pong, :won_by, :rule],
+        preload: [:ping, :pong, :won_by, :rule, :serve_started_by],
         group_by: [m.id]
 
     Repo.one(query)
@@ -142,16 +146,54 @@ defmodule PingPong.Matches do
     {match, ping_points, pong_points} = get_match_with_points(id)
 
     if match.ended == nil do
+      %{ping_id: ping_id, pong_id: pong_id} = match
+
+      [{^ping_id, ping_rating}, {^pong_id, pong_rating}] =
+        from(
+          u in User,
+          where: u.id in [^ping_id, ^pong_id],
+          select: {u.id, u.rating}
+        )
+        |> Repo.all()
+
       cond do
         ping_points >= match.rule.maximum ->
           match
           |> Match.changeset(%{won_by_id: match.ping_id, ended: DateTime.utc_now})
           |> Repo.update()
 
+          {ping_rating_new, pong_rating_new} = Elo.rate(ping_rating, pong_rating, :win)
+
+          up = from u in User,
+            update: [set: [rating: ^ping_rating_new]],
+            where: u.id == ^ping_id
+
+          Repo.update_all(up, [])
+
+          up = from u in User,
+            update: [set: [rating: ^pong_rating_new]],
+            where: u.id == ^pong_id
+
+          Repo.update_all(up, [])
+
         pong_points >= match.rule.maximum ->
           match
           |> Match.changeset(%{won_by_id: match.pong_id, ended: DateTime.utc_now})
           |> Repo.update()
+
+          {pong_rating_new, ping_rating_new} = Elo.rate(pong_rating, ping_rating, :win)
+
+          up = from u in User,
+            update: [set: [rating: ^ping_rating_new]],
+            where: u.id == ^ping_id
+
+          Repo.update_all(up, [])
+
+          up = from u in User,
+            update: [set: [rating: ^pong_rating_new]],
+            where: u.id == ^pong_id
+
+          Repo.update_all(up, [])
 
         true ->
           true
@@ -159,5 +201,15 @@ defmodule PingPong.Matches do
     end
 
     {match, ping_points, pong_points}
+  end
+
+  def check_serving(%Match{rule: %Rule{serving: serving}, serve_started_by_id: id, ping_id: ping_id}, points) do
+    case rem(floor(points / serving), 2) do
+      0 ->
+        if id == ping_id, do: "ping", else: "pong"
+
+      1 ->
+        if id == ping_id, do: "pong", else: "ping"
+    end
   end
 end

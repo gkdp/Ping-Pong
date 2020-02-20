@@ -24,5 +24,6 @@ defmodule PingPongWeb.Router do
     pipe_through :api
 
     get "/players", ApiController, :players
+    get "/highscore", ApiController, :highscore
   end
 end

@@ -1,5 +1,5 @@
 import { Socket } from 'phoenix'
-import { receiveMatch, connectedToMatch, updatePoints, matchHasBeenWon } from './actions/index'
+import { receiveMatch, connectedToMatch, updatePoints, updateServing, matchHasBeenWon } from './actions/index'
 
 export default (store) => {
   const socket = new Socket('/socket', {
@@ -28,6 +28,10 @@ export default (store) => {
           store.dispatch(updatePoints(params.ping, params.pong))
         })
 
+        channels[action.match.id].on('serve', (params) => {
+          store.dispatch(updateServing(params.serving))
+        })
+
         channels[action.match.id].on('won', (params) => {
           store.dispatch(matchHasBeenWon(params.won_by, params.ended_at))
         })
@@ -48,15 +52,13 @@ export default (store) => {
             ping: action.players.ping,
             pong: action.players.pong,
           }
+        }).receive('ok', ({ match }) => {
+          store.dispatch(receiveMatch(match))
         })
         break;
 
       case 'SEND_TO_MATCH':
         channels[store.getState().match.id].push(action.event, action.payload)
-        break;
-
-      case 'ADD_POINT':
-        channels[store.getState().match.id].push('point', { for: action.for })
         break;
     }
 

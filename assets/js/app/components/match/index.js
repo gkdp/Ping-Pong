@@ -44,6 +44,14 @@ class Match extends React.Component {
     }
   }
 
+  pointFor(player) {
+    if (!this.props.game.serving) {
+      this.props.startServing(player)
+    } else {
+      this.props.addPoint(player)
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -67,23 +75,31 @@ class Match extends React.Component {
 
           <div className="players">
             <div className="player ping">
-              {/* <div className="photo" style={{ backgroundImage: 'url(/images/jurre_2.png)' }}></div> */}
+              {/* <div className="photo" style={{ backgroundImage: 'url(/images/jurre_3.png)' }}></div> */}
 
-              <div className="score" onClick={() => !this.props.game.ended && this.props.addPoint('ping')}>
+              <div className="score" onClick={() => !this.props.game.ended && this.pointFor('ping')}>
                 <Point point={this.props.game.points.ping} />
               </div>
 
               <div className="info">
                 <div className="player-name">{this.props.game.players.ping ? this.props.game.players.ping.name : '-'}</div>
+
+                {this.props.game.serving == 'ping' && (
+                  <div className="serving">Opslag</div>
+                )}
               </div>
             </div>
             <div className="player pong">
-              <div className="score" onClick={() => !this.props.game.ended && this.props.addPoint('pong')}>
+              <div className="score" onClick={() => !this.props.game.ended && this.pointFor('pong')}>
                 <Point point={this.props.game.points.pong} />
               </div>
 
               <div className="info">
                 <div className="player-name">{this.props.game.players.pong ? this.props.game.players.pong.name : '-'}</div>
+
+                {this.props.game.serving == 'pong' && (
+                  <div className="serving">Opslag</div>
+                )}
               </div>
             </div>
           </div>

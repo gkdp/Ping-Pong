@@ -7,6 +7,7 @@ defmodule PingPong.Accounts do
   alias PingPong.Repo
 
   alias PingPong.Accounts.User
+  alias PingPong.Matches.Match
 
   @doc """
   Returns the list of users.
@@ -19,6 +20,17 @@ defmodule PingPong.Accounts do
   """
   def list_users do
     Repo.all(User)
+  end
+
+  def highscore do
+    query =
+      from u in User,
+        join: m in Match, on: u.id == m.won_by_id,
+        group_by: u.id,
+        limit: 5,
+        select: {u, count(m.id)}
+
+    Repo.all(query)
   end
 
   @doc """

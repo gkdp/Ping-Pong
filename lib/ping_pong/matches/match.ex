@@ -14,6 +14,7 @@ defmodule PingPong.Matches.Match do
     belongs_to :ping, User
     belongs_to :pong, User
     belongs_to :won_by, User
+    belongs_to :serve_started_by, User
 
     timestamps()
   end
@@ -21,7 +22,7 @@ defmodule PingPong.Matches.Match do
   @doc false
   def changeset(match, attrs) do
     match
-    |> cast(attrs, [:started, :ended, :ping_id, :pong_id, :won_by_id, :rule_id])
+    |> cast(attrs, [:started, :ended, :ping_id, :pong_id, :won_by_id, :rule_id, :serve_started_by_id])
     |> validate_required([])
   end
 end

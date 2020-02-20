@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { connectToMatch, disconnectFromMatch, addPoint } from '../actions';
+import { connectToMatch, disconnectFromMatch, startServing, addPoint } from '../actions';
 import Match from '../components/match';
 
 const mapStateToProps = ({ match }) => {
@@ -12,5 +12,6 @@ const mapStateToProps = ({ match }) => {
 export default connect(mapStateToProps, {
   connectToMatch,
   disconnectFromMatch,
+  startServing,
   addPoint,
 })(Match)

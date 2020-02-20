@@ -3,11 +3,10 @@ export const CONNECT_TO_MATCH = 'CONNECT_TO_MATCH'
 export const DISCONNECT_FROM_MATCH = 'DISCONNECT_FROM_MATCH'
 export const CONNECTED_TO_MATCH = 'CONNECTED_TO_MATCH'
 export const UPDATE_POINTS = 'UPDATE_POINTS'
+export const UPDATE_SERVING = 'UPDATE_SERVING'
 export const MATCH_HAS_BEEN_WON = 'MATCH_HAS_BEEN_WON'
 export const START_MATCH = 'START_MATCH'
-
-// Mutations
-export const ADD_POINT = 'ADD_POINT'
+export const SEND_TO_MATCH = 'SEND_TO_MATCH'
 
 export function receiveMatch(id, started) {
   return {
@@ -55,6 +54,7 @@ export function connectedToMatch(match) {
       started: match.started,
       ended: match.ended,
       won_by: match.won_by,
+      serving: match.serving,
       players: {
         ping: match.players.ping,
         pong: match.players.pong,
@@ -79,8 +79,28 @@ export function updatePoints(ping, pong) {
 
 export function addPoint(type) {
   return {
-    type: ADD_POINT,
-    for: type,
+    type: SEND_TO_MATCH,
+    event: 'point',
+    payload: {
+      for: type,
+    },
+  }
+}
+
+export function updateServing(id) {
+  return {
+    type: UPDATE_SERVING,
+    serving: id,
+  }
+}
+
+export function startServing(type) {
+  return {
+    type: SEND_TO_MATCH,
+    event: 'serve',
+    payload: {
+      for: type,
+    },
   }
 }
 

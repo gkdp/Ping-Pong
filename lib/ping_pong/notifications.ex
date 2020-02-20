@@ -26,10 +26,18 @@ defmodule PingPong.Notifications do
       "table" => "matches"
     } = Jason.decode!(payload)
 
-    PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "won", %{
-      won_by: won_by_id,
-      ended_at: ended
-    })
+    if ended do
+      PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "won", %{
+        won_by: won_by_id,
+        ended_at: ended
+      })
+    else
+      {match, ping_points, pong_points} = Matches.inspect_match(match_id)
+
+      PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "serve", %{
+        serving: Matches.check_serving(match, ping_points + pong_points)
+      })
+    end
 
     {:noreply, socket}
   end
@@ -42,11 +50,15 @@ defmodule PingPong.Notifications do
       "table" => "points"
     } = Jason.decode!(payload)
 
-    {_, ping_points, pong_points} = Matches.inspect_match(match_id)
+    {match, ping_points, pong_points} = Matches.inspect_match(match_id)
 
     PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "score", %{
       ping: ping_points,
       pong: pong_points
+    })
+
+    PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "serve", %{
+      serving: Matches.check_serving(match, ping_points + pong_points)
     })
 
     {:noreply, socket}

@@ -1,38 +1,83 @@
 defmodule PingPongWeb.UserControllerTest do
   use PingPongWeb.ConnCase
 
-  alias PingPong.Users
+  alias PingPong.Acounts
+  alias PingPong.Acounts.User
 
-  @create_attrs %{}
-  @upuserte_attrs %{}
-  @invalid_attrs %{}
+  @create_attrs %{
+    name: "some name"
+  }
+  @update_attrs %{
+    name: "some updated name"
+  }
+  @invalid_attrs %{name: nil}
 
   def fixture(:user) do
-    {:ok, user} = Users.create_user(@create_attrs)
+    {:ok, user} = Acounts.create_user(@create_attrs)
     user
   end
 
-  describe "new user" do
-    test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :new))
-      assert html_response(conn, 200) =~ "New Da"
+  setup %{conn: conn} do
+    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  end
+
+  describe "index" do
+    test "lists all users", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index))
+      assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create user" do
-    test "redirects to show when userta is valid", %{conn: conn} do
+    test "renders user when data is valid", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.user_path(conn, :show, id)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.user_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show Da"
+
+      assert %{
+               "id" => id,
+               "name" => "some name"
+             } = json_response(conn, 200)["data"]
     end
 
-    test "renders errors when userta is invalid", %{conn: conn} do
+    test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Da"
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+  end
+
+  describe "update user" do
+    setup [:create_user]
+
+    test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
+      conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+
+      conn = get(conn, Routes.user_path(conn, :show, id))
+
+      assert %{
+               "id" => id,
+               "name" => "some updated name"
+             } = json_response(conn, 200)["data"]
+    end
+
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+  end
+
+  describe "delete user" do
+    setup [:create_user]
+
+    test "deletes chosen user", %{conn: conn, user: user} do
+      conn = delete(conn, Routes.user_path(conn, :delete, user))
+      assert response(conn, 204)
+
+      assert_error_sent 404, fn ->
+        get(conn, Routes.user_path(conn, :show, user))
+      end
     end
   end
 

@@ -4,6 +4,7 @@ const initialState = {
   ended: null,
   won_by: null,
   connected: null,
+  serving: null,
   players: {
     ping: null,
     pong: null,
@@ -45,6 +46,12 @@ const match = (state, action) => {
         },
       }
 
+    case 'UPDATE_SERVING':
+      return {
+        ...state,
+        serving: action.serving,
+      }
+
     case 'CONNECTED_TO_MATCH':
       return {
         ...initialState,
@@ -52,6 +59,7 @@ const match = (state, action) => {
         started: action.match.started,
         ended: action.match.ended,
         won_by: action.match.won_by,
+        serving: action.match.serving,
         connected: true,
         players: {
           ping: action.match.players.ping,
