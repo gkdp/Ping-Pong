@@ -11,6 +11,7 @@ defmodule PingPong.Matches do
 
   alias PingPong.Championships.Rule
 
+  alias PingPong.Accounts
   alias PingPong.Accounts.User
 
   @doc """
@@ -46,7 +47,7 @@ defmodule PingPong.Matches do
   def get_active_match_id() do
     query =
       from m in Match,
-        where: not is_nil(m.started) and is_nil(m.ended),
+        where: is_nil(m.ended),
         select: m.id
 
     Repo.one(query)
@@ -67,6 +68,17 @@ defmodule PingPong.Matches do
         group_by: [m.id]
 
     Repo.one(query)
+  end
+
+  @doc """
+  Gets the points for a match.
+  """
+  def get_points_for_match(id) do
+    query =
+      from p in Point,
+        where: p.match_id == ^id
+
+    Repo.all(query)
   end
 
   @doc """
@@ -159,7 +171,7 @@ defmodule PingPong.Matches do
       cond do
         ping_points >= match.rule.maximum ->
           match
-          |> Match.changeset(%{won_by_id: match.ping_id, ended: DateTime.utc_now})
+          |> Match.changeset(%{won_by_id: match.ping_id, ended: NaiveDateTime.utc_now})
           |> Repo.update()
 
           {ping_rating_new, pong_rating_new} = Elo.rate(ping_rating, pong_rating, :win)
@@ -176,9 +188,11 @@ defmodule PingPong.Matches do
 
           Repo.update_all(up, [])
 
+          update_highscores()
+
         pong_points >= match.rule.maximum ->
           match
-          |> Match.changeset(%{won_by_id: match.pong_id, ended: DateTime.utc_now})
+          |> Match.changeset(%{won_by_id: match.pong_id, ended: NaiveDateTime.utc_now})
           |> Repo.update()
 
           {pong_rating_new, ping_rating_new} = Elo.rate(pong_rating, ping_rating, :win)
@@ -194,6 +208,8 @@ defmodule PingPong.Matches do
             where: u.id == ^pong_id
 
           Repo.update_all(up, [])
+
+          update_highscores()
 
         true ->
           true
@@ -211,5 +227,19 @@ defmodule PingPong.Matches do
       1 ->
         if id == ping_id, do: "pong", else: "ping"
     end
+  end
+
+  def update_highscores() do
+    highscores =
+      Enum.map(Accounts.highscore(), fn {user, won} ->
+        user
+        |> Map.put(:won, won)
+        |> Map.drop([:__meta__, :__struct__, :tag])
+      end)
+
+    PingPongWeb.Endpoint.broadcast!("match:lobby", "reduce", %{
+      type: "UPDATE_HIGHSCORES",
+      payload: %{players: highscores}
+    })
   end
 end

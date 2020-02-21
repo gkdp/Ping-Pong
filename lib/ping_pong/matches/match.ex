@@ -8,8 +8,8 @@ defmodule PingPong.Matches.Match do
   @derive {Jason.Encoder, only: [:id, :started, :ended]}
 
   schema "matches" do
-    field :started, :utc_datetime
-    field :ended, :utc_datetime
+    field :started, :naive_datetime
+    field :ended, :naive_datetime
     belongs_to :rule, Rule
     belongs_to :ping, User
     belongs_to :pong, User

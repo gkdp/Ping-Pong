@@ -66,13 +66,7 @@ class Highscore extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/highscore')
-      .then(d => d.json())
-      .then((players) => {
-        this.setState({
-          players,
-        })
-      })
+    this.props.retrieveHighscores()
   }
 
   render() {
@@ -90,7 +84,11 @@ class Highscore extends React.Component {
                 Header: 'Gewonnen',
                 accessor: 'won',
               },
-            ]} data={this.state.players} />
+              {
+                Header: 'Elo',
+                accessor: 'rating',
+              },
+            ]} data={this.props.highscore.players} />
           </div>
         </div>
       </React.Fragment>

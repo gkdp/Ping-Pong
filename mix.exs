@@ -41,11 +41,14 @@ defmodule PingPong.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.7.0"},
-      {:circuits_spi, "~> 0.1"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:elo, "~> 0.1.0"}
+      {:elo, "~> 0.1.0"},
+
+      {:circuits_spi, "~> 0.1"},
+      {:circuits_gpio, "~> 0.4"},
+      {:nerves_io_rc522, "~> 0.1.0", only: :rpi}
     ]
   end
 

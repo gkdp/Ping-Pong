@@ -1,6 +1,6 @@
 defmodule PingPong.Notifications do
   use GenServer
-  alias PingPong.{Matches, Matches.Match, Repo}
+  alias PingPong.{Accounts, Matches, Matches.Match, Repo}
 
   def start_link(channel) do
     GenServer.start_link(__MODULE__, channel)
@@ -26,7 +26,7 @@ defmodule PingPong.Notifications do
       "table" => "matches"
     } = Jason.decode!(payload)
 
-    if ended do
+    if ended != nil and won_by_id != nil do
       PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "won", %{
         won_by: won_by_id,
         ended_at: ended

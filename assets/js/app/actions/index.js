@@ -6,6 +6,7 @@ export const UPDATE_POINTS = 'UPDATE_POINTS'
 export const UPDATE_SERVING = 'UPDATE_SERVING'
 export const MATCH_HAS_BEEN_WON = 'MATCH_HAS_BEEN_WON'
 export const START_MATCH = 'START_MATCH'
+export const SEND_TO_LOBBY = 'SEND_TO_LOBBY'
 export const SEND_TO_MATCH = 'SEND_TO_MATCH'
 
 export function receiveMatch(id, started) {
@@ -109,5 +110,28 @@ export function matchHasBeenWon(won_by, ended_at) {
     type: MATCH_HAS_BEEN_WON,
     won_by,
     ended_at,
+  }
+}
+
+export function retrieveHighscores() {
+  return {
+    type: SEND_TO_LOBBY,
+    event: 'highscores',
+    payload: {},
+  }
+}
+
+export function retrievePoints() {
+  return {
+    type: SEND_TO_MATCH,
+    event: 'points',
+    payload: {},
+  }
+}
+
+export function doSocketReduce(type, payload) {
+  return {
+    type: type,
+    payload,
   }
 }

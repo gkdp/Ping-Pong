@@ -2,9 +2,10 @@ import React from 'react'
 import { Redirect, Route, Link } from 'react-router-dom'
 import Point from './point'
 import Modal from '../Modal'
+import UIfx from 'uifx'
 
 import { spring, AnimatedRoute } from 'react-router-transition'
-import Won from '../../containers/Won'
+import Finished from '../../containers/Finished'
 
 function bounce(val) {
   return spring(val, {
@@ -18,23 +19,33 @@ class Match extends React.Component {
     id: this.props.id || this.props.match.params.id
   }
 
+  sounds = {
+    score: new UIfx('./sounds/score.mp3')
+  }
+
   componentDidMount() {
     if (this.state.id && !this.props.game.connected) {
       this.props.connectToMatch(this.state.id)
     }
 
     if (this.props.game.ended) {
-      this.props.history.push(this.props.match.url + '/won')
+      this.props.history.push(this.props.match.url + '/finished')
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prev) {
     if (this.state.id && !this.props.game.connected) {
       this.props.connectToMatch(this.state.id)
     }
 
-    if (this.props.game.ended && !this.props.location.pathname.includes('won')) {
-      this.props.history.push(this.props.match.url + '/won')
+    if (this.props.game.ended && !this.props.location.pathname.includes('finished')) {
+      this.props.history.push(this.props.match.url + '/finished')
+    }
+
+    if (prev.game.started) {
+      if (prev.game.points.ping < this.props.game.points.ping || prev.game.points.pong < this.props.game.points.pong) {
+        this.sounds.score.play(0.7)
+      }
     }
   }
 
@@ -57,18 +68,24 @@ class Match extends React.Component {
       <React.Fragment>
         <div className="container">
           <div className="intro"><div className="text" onClick={() => {
-            this.props.history.push(this.props.match.url + '/won')
+            this.props.history.push(this.props.match.url + '/finished')
           }}>Go!</div></div>
 
+          {this.props.game.connected && !this.props.game.serving && (
+            <div className="who">
+              <div className="text">Opslag voor?</div>
+            </div>
+          )}
+
           <AnimatedRoute
-            path={`${this.props.match.url}/won`}
-            component={Won}
+            path={`${this.props.match.url}/finished`}
+            component={Finished}
             atEnter={{ scale: 0 }}
             atLeave={{ scale: 0 }}
             atActive={{ scale: bounce(1) }}
             mapStyles={(styles) => ({
               transform: `scale(${styles.scale})`,
-              pointerEvents: styles.scale == 1 ? 'all' : 'none'
+              height: '100%',
             })}
             className="scaled"
           />
@@ -89,6 +106,7 @@ class Match extends React.Component {
                 )}
               </div>
             </div>
+
             <div className="player pong">
               <div className="score" onClick={() => !this.props.game.ended && this.pointFor('pong')}>
                 <Point point={this.props.game.points.pong} />

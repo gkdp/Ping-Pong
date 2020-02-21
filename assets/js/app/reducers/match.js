@@ -12,6 +12,7 @@ const initialState = {
   points: {
     ping: 0,
     pong: 0,
+    all: null,
   },
 }
 
@@ -76,6 +77,15 @@ const match = (state, action) => {
         ...state,
         ended: action.ended_at,
         won_by: action.won_by,
+      }
+
+    case 'ALL_POINTS':
+      return {
+        ...state,
+        points: {
+          ...state.points,
+          all: action.payload.points,
+        },
       }
 
     default:

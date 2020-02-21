@@ -31,6 +31,11 @@ body {
     height: 100%;
 }
 
+.page .container {
+    position: relative;
+    overflow: hidden;
+}
+
 .switch-wrapper > div {
     width: 100%;
     overflow: hidden;
@@ -110,11 +115,73 @@ body {
     display: none;
 }
 
-.won {
-    background: #fff; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+.who {
+    padding: 3rem;
+    background: #2e2e2e;
+    color: #fff;
+    position: absolute;
+    width: 200%;
+    z-index: 10;
+    text-align: center;
+    font-size: 2.5rem;
+    transform: rotate(-7.5deg) translate(0, -50%);
+    left: -50%;
+    top: 50%;
+    margin-top: -2rem;
+    pointer-events: none;
 }
 
-.intro .text {
+.won {
+    position: relative;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+}
+
+.won .overlay {
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+    flex: 1;
+}
+
+.won .overlay .won-by {
+    font-family: 'Bowlby One SC', cursive;
+    font-size: 2.5rem;
+}
+
+.won .overlay .won-by-name {
+    font-size: 3rem;
+}
+
+.won .overlay .timeline-container {
+    width: 75%;
+    border-bottom: 2px solid #e3e3e3;
+    margin: 2rem auto 0;
+    position: relative;
+}
+
+.won .overlay .point {
+    background: red;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    top: -4px;
+    position: absolute;
+}
+
+.won .overlay .point.ping {
+    /* background: #f953c6; */
+    background: red;
+}
+
+.won .overlay .point.pong {
+    /* background: #2193b0; */
+    background: rgb(14, 100, 197);
+}
+
+.intro .text,
+.who .text {
     transform: skew(-7.5deg);
 }
 
@@ -152,6 +219,14 @@ body {
     bottom: 0;
     width: 100%;
     z-index: 10;
+    pointer-events: none;
+}
+
+.scaled > div {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     pointer-events: none;
 }
 

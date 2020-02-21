@@ -1,5 +1,5 @@
 import { Socket } from 'phoenix'
-import { receiveMatch, connectedToMatch, updatePoints, updateServing, matchHasBeenWon } from './actions/index'
+import { receiveMatch, connectedToMatch, updatePoints, updateServing, matchHasBeenWon, doSocketReduce } from './actions/index'
 
 export default (store) => {
   const socket = new Socket('/socket', {
@@ -10,6 +10,10 @@ export default (store) => {
   socket.connect()
 
   const channel = socket.channel('match:lobby')
+
+  channel.on('reduce', (params) => {
+    store.dispatch(doSocketReduce(params.type, params.payload))
+  })
 
   // Join the channel.
   channel.join()
@@ -36,6 +40,10 @@ export default (store) => {
           store.dispatch(matchHasBeenWon(params.won_by, params.ended_at))
         })
 
+        channels[action.match.id].on('reduce', (params) => {
+          store.dispatch(doSocketReduce(params.type, params.payload))
+        })
+
         channels[action.match.id].join()
           .receive('ok', ({ match }) => {
             store.dispatch(connectedToMatch(match))
@@ -58,7 +66,23 @@ export default (store) => {
         break;
 
       case 'SEND_TO_MATCH':
-        channels[store.getState().match.id].push(action.event, action.payload)
+        channels[store.getState().match.id]
+          .push(action.event, action.payload)
+          .receive('ok', ({ type = null, payload = {} }) => {
+            if (type) {
+              store.dispatch(doSocketReduce(type, payload))
+            }
+          })
+        break;
+
+      case 'SEND_TO_LOBBY':
+        channel
+          .push(action.event, action.payload)
+          .receive('ok', ({ type = null, payload = {} }) => {
+            if (type) {
+              store.dispatch(doSocketReduce(type, payload))
+            }
+          })
         break;
     }
 
