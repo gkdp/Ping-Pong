@@ -42,6 +42,17 @@ defmodule PingPong.Matches do
   end
 
   @doc """
+  Gets the active match.
+  """
+  def get_not_active_match() do
+    query =
+      from m in Match,
+        where: is_nil(m.started) and is_nil(m.ended)
+
+    Repo.one(query)
+  end
+
+  @doc """
   Gets the active match id.
   """
   def get_active_match_id() do
@@ -157,7 +168,7 @@ defmodule PingPong.Matches do
   def inspect_match(id) do
     {match, ping_points, pong_points} = get_match_with_points(id)
 
-    if match.ended == nil do
+    if match.started != nil and match.ended == nil do
       %{ping_id: ping_id, pong_id: pong_id} = match
 
       [{^ping_id, ping_rating}, {^pong_id, pong_rating}] =

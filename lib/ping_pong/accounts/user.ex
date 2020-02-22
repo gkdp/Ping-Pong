@@ -6,7 +6,7 @@ defmodule PingPong.Accounts.User do
 
   schema "users" do
     field :name, :string
-    field :tag, Ecto.UUID
+    field :tag, :string
     field :rating, :integer
 
     timestamps()

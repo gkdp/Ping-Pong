@@ -9,7 +9,7 @@ use Mix.Config
 config :ping_pong, PingPongWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
-  check_origin: false,
+  check_origin: false
 
 # ## SSL Support
 #

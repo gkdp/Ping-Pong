@@ -49,6 +49,8 @@ defmodule PingPong.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user_by_tag(tag), do: Repo.get_by(User, tag: tag)
+
   @doc """
   Creates a user.
 

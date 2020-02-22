@@ -46,7 +46,6 @@ defmodule PingPong.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:elo, "~> 0.1.0"},
 
-      {:circuits_spi, "~> 0.1"},
       {:circuits_gpio, "~> 0.4"},
       {:nerves_io_rc522, "~> 0.1.0", only: :rpi}
     ]

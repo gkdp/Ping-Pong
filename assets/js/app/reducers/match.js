@@ -42,6 +42,7 @@ const match = (state, action) => {
       return {
         ...state,
         points: {
+          all: state.points.state,
           ping: action.points.ping,
           pong: action.points.pong,
         },
@@ -67,8 +68,24 @@ const match = (state, action) => {
           pong: action.match.players.pong,
         },
         points: {
+          all: null,
           ping: action.match.points.ping,
           pong: action.match.points.pong,
+        },
+      }
+
+    case 'GAME_STARTED':
+      return {
+        ...state,
+        started: action.payload.started,
+      }
+
+    case 'UPDATE_MATCH_PLAYERS':
+      return {
+        ...state,
+        players: {
+          ping: action.payload.players.ping,
+          pong: action.payload.players.pong,
         },
       }
 

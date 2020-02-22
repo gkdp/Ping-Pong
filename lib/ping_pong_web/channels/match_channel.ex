@@ -48,7 +48,7 @@ defmodule PingPongWeb.MatchChannel do
       {:ok, %Match{id: id}} =
         Matches.create_match(%{
           ping_id: ping,
-          pong_id: pong,
+          # pong_id: pong,
           rule_id: 1
         })
 
@@ -76,14 +76,16 @@ defmodule PingPongWeb.MatchChannel do
   def handle_in("serve", %{"for" => type}, %Socket{topic: "match:game:" <> match_id} = socket) do
     match = Matches.get_match!(match_id)
 
+    started = NaiveDateTime.utc_now
+
     match
     |> Match.changeset(%{
-      started: NaiveDateTime.utc_now,
+      started: started,
       serve_started_by_id: if(type == "ping", do: match.ping_id, else: match.pong_id)
     })
     |> Repo.update()
 
-    {:noreply, socket}
+    {:reply, {:ok, %{type: "GAME_STARTED", payload: %{started: started}}}, socket}
   end
 
   # Handle the highscores

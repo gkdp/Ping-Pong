@@ -15,8 +15,8 @@ defmodule PingPong.Application do
       # Start the endpoint when the application starts
       PingPongWeb.Endpoint,
 
-      worker(PingPongControls.Buttons, [10], id: :ping_button),
-      worker(PingPongControls.Buttons, [22], id: :pong_button),
+      # worker(PingPongControls.Buttons, [10], id: :ping_button),
+      # worker(PingPongControls.Buttons, [22], id: :pong_button),
 
       # Starts a worker by calling: PingPong.Worker.start_link(arg)
       # {PingPong.Worker, arg},
@@ -26,7 +26,7 @@ defmodule PingPong.Application do
 
     children =
       children
-      |> add_child(Code.ensure_compiled?(Nerves.IO.RC522), fn -> [{Nerves.IO.RC522, [{PingPongControls.Reader, :tag_scanned}]}] end)
+      |> add_child(Code.ensure_compiled?(Nerves.IO.RC522), fn -> [{Nerves.IO.RC522, {PingPongControls.Reader, :tag_scanned}}] end)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

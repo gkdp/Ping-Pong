@@ -16,7 +16,8 @@ function bounce(val) {
 
 class Match extends React.Component {
   state = {
-    id: this.props.id || this.props.match.params.id
+    id: this.props.id || this.props.match.params.id,
+    hasPlayers: false,
   }
 
   sounds = {
@@ -26,6 +27,14 @@ class Match extends React.Component {
   componentDidMount() {
     if (this.state.id && !this.props.game.connected) {
       this.props.connectToMatch(this.state.id)
+    }
+
+    if (this.props.game.connected) {
+      if (this.props.game.players.ping && this.props.game.players.pong) {
+        this.setState({
+          hasPlayers: true,
+        })
+      }
     }
 
     if (this.props.game.ended) {
@@ -40,6 +49,16 @@ class Match extends React.Component {
 
     if (this.props.game.ended && !this.props.location.pathname.includes('finished')) {
       this.props.history.push(this.props.match.url + '/finished')
+    }
+
+    if (prev && this.props.game.connected) {
+      const had = prev.game.players.ping && prev.game.players.pong
+
+      if (!had && this.props.game.players.ping && this.props.game.players.pong) {
+        this.setState({
+          hasPlayers: true,
+        })
+      }
     }
 
     if (prev.game.started) {
@@ -71,7 +90,7 @@ class Match extends React.Component {
             this.props.history.push(this.props.match.url + '/finished')
           }}>Go!</div></div>
 
-          {this.props.game.connected && !this.props.game.serving && (
+          {this.state.hasPlayers && this.props.game.connected && !this.props.game.serving && (
             <div className="who">
               <div className="text">Opslag voor?</div>
             </div>
@@ -90,35 +109,61 @@ class Match extends React.Component {
             className="scaled"
           />
 
-          <div className="players">
+          <div className={`players${this.state.hasPlayers ? ' has-players' : ''}`}>
             <div className="player ping">
               {/* <div className="photo" style={{ backgroundImage: 'url(/images/jurre_3.png)' }}></div> */}
 
-              <div className="score" onClick={() => !this.props.game.ended && this.pointFor('ping')}>
-                <Point point={this.props.game.points.ping} />
-              </div>
+              {!this.state.hasPlayers && this.props.game.players.ping && (
+                <div className="info-big">
+                  <div className="player-name">{this.props.game.players.ping.name}</div>
+                </div>
+              )}
 
-              <div className="info">
-                <div className="player-name">{this.props.game.players.ping ? this.props.game.players.ping.name : '-'}</div>
+              {this.state.hasPlayers && (
+                <>
+                  <div className="score" onClick={() => !this.props.game.ended && this.pointFor('ping')}>
+                    <Point point={this.props.game.points.ping} />
+                  </div>
 
-                {this.props.game.serving == 'ping' && (
-                  <div className="serving">Opslag</div>
-                )}
-              </div>
+                  <div className="info">
+                    <div className="player-name">{this.props.game.players.ping ? this.props.game.players.ping.name : '-'}</div>
+
+                    {this.props.game.serving == 'ping' && (
+                      <div className="serving">Opslag</div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              <div className="vs-ping"></div>
+              <div className="vs-ping-letter">V</div>
             </div>
 
             <div className="player pong">
-              <div className="score" onClick={() => !this.props.game.ended && this.pointFor('pong')}>
-                <Point point={this.props.game.points.pong} />
-              </div>
+              {!this.state.hasPlayers && this.props.game.players.pong && (
+                <div className="info-big">
+                  <div className="player-name">{this.props.game.players.pong.name}</div>
+                </div>
+              )}
 
-              <div className="info">
-                <div className="player-name">{this.props.game.players.pong ? this.props.game.players.pong.name : '-'}</div>
+              {this.state.hasPlayers && (
+                <>
+                  <div className="score" onClick={() => !this.props.game.ended && this.pointFor('pong')}>
+                    <Point point={this.props.game.points.pong} />
+                  </div>
 
-                {this.props.game.serving == 'pong' && (
-                  <div className="serving">Opslag</div>
-                )}
-              </div>
+                  <div className="info">
+                    <div className="player-name">{this.props.game.players.pong ? this.props.game.players.pong.name : '-'}</div>
+
+                    {this.props.game.serving == 'pong' && (
+                      <div className="serving">Opslag</div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              <div className="vs-pong"></div>
+              <div className="vs-pong-letter">S</div>
             </div>
           </div>
         </div>

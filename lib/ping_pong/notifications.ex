@@ -34,9 +34,21 @@ defmodule PingPong.Notifications do
     else
       {match, ping_points, pong_points} = Matches.inspect_match(match_id)
 
-      PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "serve", %{
-        serving: Matches.check_serving(match, ping_points + pong_points)
-      })
+      if match.started != nil do
+        PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "serve", %{
+          serving: Matches.check_serving(match, ping_points + pong_points)
+        })
+      else
+        PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "reduce", %{
+          type: "UPDATE_MATCH_PLAYERS",
+          payload: %{
+            players: %{
+              ping: match.ping,
+              pong: match.pong
+            }
+          }
+        })
+      end
     end
 
     {:noreply, socket}
