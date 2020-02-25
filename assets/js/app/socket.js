@@ -26,6 +26,10 @@ export default (store) => {
   return next => action => {
     switch (action.type) {
       case 'CONNECT_TO_MATCH':
+        if(channels[action.match.id] != void 0) {
+          break;
+        }
+
         channels[action.match.id] = socket.channel('match:game:' + action.match.id)
 
         channels[action.match.id].on('score', (params) => {
@@ -55,12 +59,7 @@ export default (store) => {
         break;
 
       case 'START_MATCH':
-        channel.push('start', {
-          players: {
-            ping: action.players.ping,
-            pong: action.players.pong,
-          }
-        }).receive('ok', ({ match }) => {
+        channel.push('start').receive('ok', ({ match }) => {
           store.dispatch(receiveMatch(match))
         })
         break;

@@ -9,7 +9,18 @@ defmodule PingPongWeb.MatchChannel do
 
   # Join the lobby and give the active match id as response
   def join("match:lobby", _payload, socket) do
-    {:ok, %{match: Matches.get_active_match_id()}, socket}
+    case Matches.get_active_match_id() do
+      id when is_integer(id) ->
+        {:ok, %{match: id}, socket}
+
+      nil ->
+        {:ok, %Match{id: id}} =
+          Matches.create_match(%{
+            rule_id: 1
+          })
+
+        {:ok, %{match: id}, socket}
+    end
   end
 
   # Join the game and give the match details as response
@@ -32,7 +43,8 @@ defmodule PingPongWeb.MatchChannel do
         points: %{
           ping: ping_points,
           pong: pong_points
-        }
+        },
+        information: Matches.get_information(match)
       }
 
       {:ok, %{match: match}, socket}
@@ -60,14 +72,16 @@ defmodule PingPongWeb.MatchChannel do
 
   # Handle the point for a match
   def handle_in("point", %{"for" => player}, %Socket{topic: "match:game:" <> match_id} = socket) do
-    %Match{ping_id: ping_id, pong_id: pong_id} = Matches.get_match!(match_id)
+    %Match{started: started, ping_id: ping_id, pong_id: pong_id} = Matches.get_match!(match_id)
 
-    {id, _} =
-      Code.eval_string player,
-        ping: ping_id,
-        pong: pong_id
+    if started != nil do
+      {id, _} =
+        Code.eval_string player,
+          ping: ping_id,
+          pong: pong_id
 
-    Matches.create_point(%{match_id: match_id, user_id: id})
+      Matches.create_point(%{match_id: match_id, user_id: id})
+    end
 
     {:noreply, socket}
   end

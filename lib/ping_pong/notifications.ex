@@ -28,7 +28,7 @@ defmodule PingPong.Notifications do
 
     if ended != nil and won_by_id != nil do
       PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "won", %{
-        won_by: won_by_id,
+        won_by: Accounts.get_user!(won_by_id),
         ended_at: ended
       })
     else
@@ -42,6 +42,7 @@ defmodule PingPong.Notifications do
         PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "reduce", %{
           type: "UPDATE_MATCH_PLAYERS",
           payload: %{
+            information: Matches.get_information(match),
             players: %{
               ping: match.ping,
               pong: match.pong

@@ -3,6 +3,7 @@ const initialState = {
   started: null,
   ended: null,
   won_by: null,
+  wonRedirect: false,
   connected: null,
   serving: null,
   players: {
@@ -14,6 +15,7 @@ const initialState = {
     pong: 0,
     all: null,
   },
+  information: null,
 }
 
 const match = (state, action) => {
@@ -42,7 +44,7 @@ const match = (state, action) => {
       return {
         ...state,
         points: {
-          all: state.points.state,
+          all: state.points.all,
           ping: action.points.ping,
           pong: action.points.pong,
         },
@@ -72,6 +74,7 @@ const match = (state, action) => {
           ping: action.match.points.ping,
           pong: action.match.points.pong,
         },
+        information: action.match.information,
       }
 
     case 'GAME_STARTED':
@@ -87,6 +90,7 @@ const match = (state, action) => {
           ping: action.payload.players.ping,
           pong: action.payload.players.pong,
         },
+        information: action.payload.information,
       }
 
     case 'MATCH_HAS_BEEN_WON':
@@ -94,6 +98,7 @@ const match = (state, action) => {
         ...state,
         ended: action.ended_at,
         won_by: action.won_by,
+        wonRedirect: true,
       }
 
     case 'ALL_POINTS':

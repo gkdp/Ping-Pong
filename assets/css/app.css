@@ -21,12 +21,12 @@ body {
     height: 100vh;
 } */
 
-.page {
+.match > .container {
     min-height: 250px;
     height: 75vh;
 }
 
-.page .container,
+/* .page .container, */
 .page .players {
     height: 100%;
 }
@@ -130,7 +130,7 @@ body {
     top: 50%;
     margin-top: -2rem;
     pointer-events: none;
-    z-index: 15;
+    /* z-index: 15; */
     opacity: 0.95;
 }
 
@@ -204,23 +204,11 @@ body {
     width: 20%;
     overflow: hidden;
     z-index: 1;
-    transition: all 0.5s;
+    transition: all 3s;
 }
 
 .vs-ping::after {
     content: '';
-    /* position: absolute;
-    top: 0;
-    right: -25px;
-    bottom: 50px;
-    left: -25px;
-    background: #f953c6;
-    background: -webkit-linear-gradient(to top, #b91d73, #f953c6);
-    background: linear-gradient(to top, #b91d73, #f953c6);
-    transform: rotate(10deg);
-    z-index: 1;
-    transition: all 0.5s; */
-
     position: absolute;
     top: 0;
     right: -50%;
@@ -231,7 +219,7 @@ body {
     background: linear-gradient(to top, #b91d73, #f953c6);
     transform: rotate(10deg);
     z-index: 1;
-    transition: all 0.5s;
+    transition: all 3s;
 }
 
 .vs-ping-letter,
@@ -244,7 +232,7 @@ body {
     transform: translateY(-50%);
     z-index: 10;
     opacity: 1;
-    transition: all 0.5s;
+    transition: all 3s;
 }
 
 .vs-ping-letter {
@@ -275,23 +263,11 @@ body {
     width: 20%;
     overflow: hidden;
     z-index: 1;
-    transition: all 0.5s;
+    transition: all 2s;
 }
 
 .vs-pong::after {
     content: '';
-    /* position: absolute;
-    top: 50px;
-    left: -25px;
-    bottom: 0;
-    right: -25px;
-    background: #2193b0;
-    background: -webkit-linear-gradient(to bottom, #6dd5ed, #2193b0);
-    background: linear-gradient(to bottom, #6dd5ed, #2193b0);
-    transform: rotate(10deg);
-    z-index: 1;
-    transition: all 0.5s; */
-
     position: absolute;
     top: 45px;
     left: -50%;
@@ -302,11 +278,23 @@ body {
     background: linear-gradient(to bottom, #6dd5ed, #2193b0);
     transform: rotate(10deg);
     z-index: 1;
-    transition: all 0.5s;
+    transition: all 2s;
 }
 
 .pong .info {
     background: #0d6e86;
+}
+
+.countdown {
+    position: absolute;
+    z-index: 100;
+    font-family: 'Bowlby One SC', cursive;
+    font-size: 6rem;
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    margin-top: 3rem;
+    transform: translate(-50%);
 }
 
 .players.has-players .vs-ping,
@@ -366,8 +354,9 @@ body {
     pointer-events: none;
 }
 
-.highscore {
-    background: #0e0e0e;
+.highscore,
+.information {
+    background: #2e2e2e;
     color: #fff;
     padding: 2rem;
 }
@@ -387,6 +376,40 @@ body {
     display: flex;
     flex: 1;
     flex-direction: column;
+}
+
+.page {
+    min-height: 100vh;
+}
+
+.page > .match {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.page > .match > .information {
+    font-size: 1.7rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container.won,
+.container.welcome {
+    height: 100%;
+}
+
+.container.welcome {
+    background: #E0EAFC;
+    background: -webkit-linear-gradient(to right, #CFDEF3, #E0EAFC);
+    background: linear-gradient(to right, #CFDEF3, #E0EAFC);
+}
+
+.container.won .countdown {
+    color: rgb(43, 43, 43);
+    margin-top: 7.5rem;
 }
 
 .highscore {

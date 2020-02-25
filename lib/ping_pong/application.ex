@@ -15,8 +15,8 @@ defmodule PingPong.Application do
       # Start the endpoint when the application starts
       PingPongWeb.Endpoint,
 
-      # worker(PingPongControls.Buttons, [10], id: :ping_button),
-      # worker(PingPongControls.Buttons, [22], id: :pong_button),
+      worker(PingPongControls.Buttons, [17], id: :ping_button),
+      worker(PingPongControls.Buttons, [27], id: :pong_button),
 
       # Starts a worker by calling: PingPong.Worker.start_link(arg)
       # {PingPong.Worker, arg},

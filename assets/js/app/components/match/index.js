@@ -1,11 +1,13 @@
 import React from 'react'
 import { Redirect, Route, Link } from 'react-router-dom'
+import TextTransition, { presets } from 'react-text-transition'
 import Point from './point'
-import Modal from '../Modal'
+import Fade from 'react-fade-opacity'
 import UIfx from 'uifx'
 
 import { spring, AnimatedRoute } from 'react-router-transition'
 import Finished from '../../containers/Finished'
+import Information from '../../containers/information'
 
 function bounce(val) {
   return spring(val, {
@@ -18,10 +20,15 @@ class Match extends React.Component {
   state = {
     id: this.props.id || this.props.match.params.id,
     hasPlayers: false,
+    hadPlayers: false,
+
+    count: 0,
   }
 
+  interval = null
+
   sounds = {
-    score: new UIfx('./sounds/score.mp3')
+    score: null,
   }
 
   componentDidMount() {
@@ -40,6 +47,8 @@ class Match extends React.Component {
     if (this.props.game.ended) {
       this.props.history.push(this.props.match.url + '/finished')
     }
+
+    this.sounds.score = new UIfx('/sounds/score.mp3')
   }
 
   componentDidUpdate(prev) {
@@ -51,13 +60,49 @@ class Match extends React.Component {
       this.props.history.push(this.props.match.url + '/finished')
     }
 
+    if (prev.game.serving != this.props.game.serving && this.props.game.serving) {
+      if ('speechSynthesis' in window) {
+        var msg = new SpeechSynthesisUtterance();
+        var voices = window.speechSynthesis.getVoices();
+        msg.voice = voices[0];
+        msg.text = `${this.props.game.players[this.props.game.serving].name} heeft nu opslag!`;
+
+        speechSynthesis.speak(msg)
+      }
+    }
+
     if (prev && this.props.game.connected) {
       const had = prev.game.players.ping && prev.game.players.pong
 
-      if (!had && this.props.game.players.ping && this.props.game.players.pong) {
-        this.setState({
-          hasPlayers: true,
-        })
+      if (!had && this.props.game.players.ping && this.props.game.players.pong && !this.props.game.won_by) {
+        if (prev.game.connected) {
+          setTimeout(() => {
+            this.setState({
+              hasPlayers: true,
+            })
+          }, 3000)
+
+          this.setState({
+            count: 3,
+          })
+
+          this.interval = setInterval(() => {
+            if (this.state.count <= 0) {
+              clearInterval(this.interval)
+              this.interval = null
+              return
+            }
+
+            this.setState({
+              count: --this.state.count,
+            })
+          }, 1000)
+        } else{
+          this.setState({
+            hasPlayers: true,
+            hadPlayers: true,
+          })
+        }
       }
     }
 
@@ -84,20 +129,22 @@ class Match extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <div className="match">
         <div className="container">
           <div className="intro"><div className="text" onClick={() => {
             this.props.history.push(this.props.match.url + '/finished')
           }}>Go!</div></div>
 
           {this.state.hasPlayers && this.props.game.connected && !this.props.game.serving && (
-            <div className="who">
-              <div className="text">Opslag voor?</div>
-            </div>
+            <Fade delay={this.state.hadPlayers ? 0 : 2000} in={true} interval={this.state.hadPlayers ? 0 : 50}>
+              <div className="who">
+                <div className="text">Opslag voor?</div>
+              </div>
+            </Fade>
           )}
 
           <AnimatedRoute
-            path={`${this.props.match.url}/finished`}
+            path="/match/:id/finished"
             component={Finished}
             atEnter={{ scale: 0 }}
             atLeave={{ scale: 0 }}
@@ -108,6 +155,15 @@ class Match extends React.Component {
             })}
             className="scaled"
           />
+
+          {this.state.count > 0 && (
+            <div className="countdown">
+              <TextTransition
+                text={this.state.count}
+                springConfig={presets.gentle}
+              />
+            </div>
+          )}
 
           <div className={`players${this.state.hasPlayers ? ' has-players' : ''}`}>
             <div className="player ping">
@@ -135,8 +191,12 @@ class Match extends React.Component {
                 </>
               )}
 
-              <div className="vs-ping"></div>
-              <div className="vs-ping-letter">V</div>
+              {this.props.game.connected && !this.state.hadPlayers && (
+                <>
+                  <div className="vs-ping"></div>
+                  <div className="vs-ping-letter">V</div>
+                </>
+              )}
             </div>
 
             <div className="player pong">
@@ -162,12 +222,18 @@ class Match extends React.Component {
                 </>
               )}
 
-              <div className="vs-pong"></div>
-              <div className="vs-pong-letter">S</div>
+              {this.props.game.connected && !this.state.hadPlayers && (
+                <>
+                  <div className="vs-pong"></div>
+                  <div className="vs-pong-letter">S</div>
+                </>
+              )}
             </div>
           </div>
         </div>
-      </React.Fragment>
+
+        <Information />
+      </div>
     );
   }
 }

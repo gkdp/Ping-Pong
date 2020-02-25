@@ -15,7 +15,7 @@ defmodule PingPongControls.Reader do
           |> Match.changeset(%{ping_id: id})
           |> Repo.update()
 
-        %Match{pong_id: nil} = match ->
+        %Match{pong_id: nil, ping_id: ping_id} = match when ping_id != id ->
           match
           |> Match.changeset(%{pong_id: id})
           |> Repo.update()

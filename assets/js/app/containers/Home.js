@@ -6,6 +6,7 @@ import Home from '../components/home';
 const mapStateToProps = ({ match }) => {
   return {
     id: match.id,
+    wonRedirect: match.wonRedirect,
   };
 }
 

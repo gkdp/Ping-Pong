@@ -28,13 +28,9 @@ export function connectToMatch(id) {
   }
 }
 
-export function startMatch(ping, pong) {
+export function startMatch() {
   return {
     type: START_MATCH,
-    players: {
-      ping,
-      pong,
-    },
   }
 }
 
@@ -64,6 +60,7 @@ export function connectedToMatch(match) {
         ping: match.points.ping,
         pong: match.points.pong,
       },
+      information: match.information,
     },
   }
 }

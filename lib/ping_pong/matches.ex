@@ -36,7 +36,7 @@ defmodule PingPong.Matches do
   def get_active_match() do
     query =
       from m in Match,
-        where: not is_nil(m.started) and is_nil(m.ended)
+        where: is_nil(m.ended)
 
     Repo.one(query)
   end
@@ -60,6 +60,18 @@ defmodule PingPong.Matches do
       from m in Match,
         where: is_nil(m.ended),
         select: m.id
+
+    Repo.one(query)
+  end
+
+  @doc """
+  Gets the match with players.
+  """
+  def get_match_with_players(id) do
+    query =
+      from m in Match,
+        where: m.id == ^id,
+        preload: [:ping, :pong]
 
     Repo.one(query)
   end
@@ -175,7 +187,11 @@ defmodule PingPong.Matches do
         from(
           u in User,
           where: u.id in [^ping_id, ^pong_id],
-          select: {u.id, u.rating}
+          select: {u.id, u.rating},
+          order_by: [
+            fragment("id = ? DESC", ^ping_id),
+            fragment("id = ? DESC", ^pong_id),
+          ]
         )
         |> Repo.all()
 
@@ -252,5 +268,21 @@ defmodule PingPong.Matches do
       type: "UPDATE_HIGHSCORES",
       payload: %{players: highscores}
     })
+  end
+
+  def get_information(match) do
+    cond do
+      match.won_by_id != nil ->
+        ""
+      match.ping != nil and match.pong != nil ->
+        result = round(Elo.expected_result(match.ping.rating, match.pong.rating) * 100)
+        "De kans dat #{match.ping.name} wint van #{match.pong.name} is #{result}%"
+      match.ping_id == nil ->
+        "Speler #1: meld je aan"
+      match.pong_id == nil ->
+        "Speler #2: meld je aan"
+      true ->
+        ""
+    end
   end
 end
