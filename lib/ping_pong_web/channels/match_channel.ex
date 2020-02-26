@@ -32,10 +32,18 @@ defmodule PingPongWeb.MatchChannel do
         ended: match.ended,
         won_by: match.won_by,
         serving:
-          if(match.serve_started_by_id,
-            do: Matches.check_serving(match, ping_points + pong_points),
-            else: nil
-          ),
+          if(match.serve_started_by_id, do: Matches.check_serving(match, ping_points + pong_points)),
+        matchpoint:
+          cond do
+            ping_points >= (match.rule.maximum - 1) and pong_points <= (ping_points - 1) ->
+              "ping"
+
+            pong_points >= (match.rule.maximum - 1) and ping_points <= (pong_points - 1) ->
+              "pong"
+
+            true ->
+              nil
+          end,
         players: %{
           ping: match.ping,
           pong: match.pong
@@ -55,12 +63,10 @@ defmodule PingPongWeb.MatchChannel do
   end
 
   # Create a new match with the given players.
-  def handle_in("start", %{"players" => %{"ping" => ping, "pong" => pong}}, socket) do
+  def handle_in("start", _, socket) do
     if Matches.get_active_match_id() == nil do
       {:ok, %Match{id: id}} =
         Matches.create_match(%{
-          ping_id: ping,
-          # pong_id: pong,
           rule_id: 1
         })
 

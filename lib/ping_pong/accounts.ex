@@ -87,6 +87,34 @@ defmodule PingPong.Accounts do
     |> Repo.update()
   end
 
+  def set_rating(%User{} = user, attrs) do
+    # TODO
+    # user
+    # |> User.changeset(attrs)
+    # |> Repo.update()
+  end
+
+  def set_rating(id, rating) do
+    query = from u in User,
+      update: [set: [rating: ^rating]],
+      where: u.id == ^id
+
+    Repo.update_all(query, [])
+  end
+
+  def get_ratings(ping_id, pong_id) do
+    query =
+      from u in User,
+        where: u.id in [^ping_id, ^pong_id],
+        select: {u.id, u.rating},
+        order_by: [
+          fragment("id = ? DESC", ^ping_id),
+          fragment("id = ? DESC", ^pong_id)
+        ]
+
+    Repo.all(query)
+  end
+
   @doc """
   Deletes a user.
 

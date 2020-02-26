@@ -13,7 +13,7 @@ class Finished extends React.Component {
   interval = null
 
   sounds = {
-    finished: null,
+    replay: null,
   }
 
   componentDidMount() {
@@ -26,9 +26,9 @@ class Finished extends React.Component {
     }
 
     if (this.props.game.wonRedirect) {
-      this.sounds.finished = new UIfx('./sounds/finished.mp3')
+      this.sounds.replay = new UIfx('./sounds/replay.mp3')
 
-      // this.sounds.finished.play(0.7)
+      this.sounds.replay.play(0.7)
     }
   }
 
@@ -49,11 +49,11 @@ class Finished extends React.Component {
 
     if (this.props.game.wonRedirect) {
       this.setState({
-        count: 5,
+        count: 10,
       })
 
       this.interval = setInterval(() => {
-        if (this.state.count <= 1) {
+        if (this.state.count <= 0) {
           clearInterval(this.interval)
           this.interval = null
           this.props.history.push('/')
@@ -94,7 +94,7 @@ class Finished extends React.Component {
     )
   }
 
-  render() { console.log(this.props.game)
+  render() {
     return (
       <React.Fragment>
         <div className="container won">

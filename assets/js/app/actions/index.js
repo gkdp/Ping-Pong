@@ -4,6 +4,7 @@ export const DISCONNECT_FROM_MATCH = 'DISCONNECT_FROM_MATCH'
 export const CONNECTED_TO_MATCH = 'CONNECTED_TO_MATCH'
 export const UPDATE_POINTS = 'UPDATE_POINTS'
 export const UPDATE_SERVING = 'UPDATE_SERVING'
+export const UPDATE_MATCHPOINT = 'UPDATE_MATCHPOINT'
 export const MATCH_HAS_BEEN_WON = 'MATCH_HAS_BEEN_WON'
 export const START_MATCH = 'START_MATCH'
 export const SEND_TO_LOBBY = 'SEND_TO_LOBBY'
@@ -52,6 +53,7 @@ export function connectedToMatch(match) {
       ended: match.ended,
       won_by: match.won_by,
       serving: match.serving,
+      matchpoint: match.matchpoint,
       players: {
         ping: match.players.ping,
         pong: match.players.pong,
@@ -85,10 +87,17 @@ export function addPoint(type) {
   }
 }
 
-export function updateServing(id) {
+export function updateServing(player) {
   return {
     type: UPDATE_SERVING,
-    serving: id,
+    serving: player,
+  }
+}
+
+export function updateMatchpoint(player) {
+  return {
+    type: UPDATE_MATCHPOINT,
+    matchpoint: player,
   }
 }
 

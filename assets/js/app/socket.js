@@ -1,5 +1,5 @@
 import { Socket } from 'phoenix'
-import { receiveMatch, connectedToMatch, updatePoints, updateServing, matchHasBeenWon, doSocketReduce } from './actions/index'
+import { receiveMatch, connectedToMatch, updatePoints, updateServing, updateMatchpoint, matchHasBeenWon, doSocketReduce } from './actions/index'
 
 export default (store) => {
   const socket = new Socket('/socket', {
@@ -38,6 +38,10 @@ export default (store) => {
 
         channels[action.match.id].on('serve', (params) => {
           store.dispatch(updateServing(params.serving))
+        })
+
+        channels[action.match.id].on('matchpoint', (params) => {
+          store.dispatch(updateMatchpoint(params.matchpoint))
         })
 
         channels[action.match.id].on('won', (params) => {

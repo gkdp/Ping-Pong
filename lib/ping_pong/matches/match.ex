@@ -5,6 +5,12 @@ defmodule PingPong.Matches.Match do
   alias PingPong.Accounts.User
   alias PingPong.Championships.Rule
 
+  @type t :: %__MODULE__{
+    id: integer,
+    started: NaiveDateTime.t,
+    ended: NaiveDateTime.t
+  }
+
   @derive {Jason.Encoder, only: [:id, :started, :ended]}
 
   schema "matches" do

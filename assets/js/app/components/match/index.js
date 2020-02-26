@@ -29,6 +29,7 @@ class Match extends React.Component {
 
   sounds = {
     score: null,
+    matchpoint: null,
   }
 
   componentDidMount() {
@@ -49,6 +50,7 @@ class Match extends React.Component {
     }
 
     this.sounds.score = new UIfx('/sounds/score.mp3')
+    this.sounds.matchpoint = new UIfx('/sounds/matchpoint.wav')
   }
 
   componentDidUpdate(prev) {
@@ -60,15 +62,37 @@ class Match extends React.Component {
       this.props.history.push(this.props.match.url + '/finished')
     }
 
-    if (prev.game.serving != this.props.game.serving && this.props.game.serving) {
+    if (prev.game.connected && prev.game.serving != this.props.game.serving && this.props.game.serving && !this.props.game.ended) {
       if ('speechSynthesis' in window) {
-        var msg = new SpeechSynthesisUtterance();
-        var voices = window.speechSynthesis.getVoices();
-        msg.voice = voices[0];
-        msg.text = `${this.props.game.players[this.props.game.serving].name} heeft nu opslag!`;
+          function setSpeech() {
+            return new Promise(
+                function (resolve, reject) {
+                    let synth = window.speechSynthesis;
+                    let id;
 
-        speechSynthesis.speak(msg)
+                    id = setInterval(() => {
+                        if (synth.getVoices().length !== 0) {
+                            resolve(synth.getVoices());
+                            clearInterval(id);
+                        }
+                    }, 10);
+                }
+            )
+        }
+
+        setSpeech().then((voices) => {
+          var msg = new SpeechSynthesisUtterance();
+          console.log(voices)
+          msg.voice = voices[60];
+          msg.text = `${this.props.game.players[this.props.game.serving].name} heeft nu opslag!`;
+
+          speechSynthesis.speak(msg)
+        })
       }
+    }
+
+    if (prev.game.connected && prev.game.matchpoint != this.props.game.matchpoint && this.props.game.matchpoint) {
+      this.sounds.matchpoint.play(0.7)
     }
 
     if (prev && this.props.game.connected) {
@@ -179,6 +203,10 @@ class Match extends React.Component {
                 <>
                   <div className="score" onClick={() => !this.props.game.ended && this.pointFor('ping')}>
                     <Point point={this.props.game.points.ping} />
+
+                    {this.props.game.matchpoint == 'ping' && (
+                      <div className="matchpoint">Matchpoint</div>
+                    )}
                   </div>
 
                   <div className="info">
@@ -210,6 +238,10 @@ class Match extends React.Component {
                 <>
                   <div className="score" onClick={() => !this.props.game.ended && this.pointFor('pong')}>
                     <Point point={this.props.game.points.pong} />
+
+                    {this.props.game.matchpoint == 'pong' && (
+                      <div className="matchpoint">Matchpoint</div>
+                    )}
                   </div>
 
                   <div className="info">

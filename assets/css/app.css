@@ -82,7 +82,8 @@ body {
     align-items: center;
 }
 
-.info {
+.info,
+.matchpoint {
     font-size: 2rem;
     color: #fff;
     padding: 2rem;
@@ -98,6 +99,26 @@ body {
     background: rgba(0,0,0,0.3);
     border-radius: 1rem;
     padding: 0 .5rem;
+}
+
+.score {
+    position: relative;
+    width: 100%;
+}
+
+.score .point {
+    margin: 0 auto;
+    z-index: 5;
+}
+
+.score .matchpoint {
+    font-family:'Helvetica', 'Arial', sans-serif;
+    background: #ffffffcc;
+    color: #2e2e2e;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .intro {

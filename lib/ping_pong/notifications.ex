@@ -74,6 +74,22 @@ defmodule PingPong.Notifications do
       serving: Matches.check_serving(match, ping_points + pong_points)
     })
 
+    matchpoint =
+      cond do
+        ping_points >= (match.rule.maximum - 1) and pong_points <= (ping_points - 1) ->
+          "ping"
+
+        pong_points >= (match.rule.maximum - 1) and ping_points <= (pong_points - 1) ->
+          "pong"
+
+        true ->
+          nil
+      end
+
+    PingPongWeb.Endpoint.broadcast!("match:game:#{match_id}", "matchpoint", %{
+      matchpoint: matchpoint
+    })
+
     {:noreply, socket}
   end
 end
