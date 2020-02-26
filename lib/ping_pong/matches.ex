@@ -6,6 +6,7 @@ defmodule PingPong.Matches do
   import Ecto.Query, warn: false
   alias PingPong.Repo
 
+  alias PingPong.Matches
   alias PingPong.Matches.Match
   alias PingPong.Matches.Point
 
@@ -59,7 +60,8 @@ defmodule PingPong.Matches do
     query =
       from m in Match,
         where: is_nil(m.ended),
-        select: m.id
+        select: m.id,
+        limit: 1
 
     Repo.one(query)
   end
@@ -196,7 +198,7 @@ defmodule PingPong.Matches do
       )
       when started != nil and ended == nil
   do
-    result = cond do
+    cond do
       ping_points >= match.rule.maximum and pong_points < (ping_points - 1) ->
         finish_match(match, "ping")
 
@@ -217,7 +219,7 @@ defmodule PingPong.Matches do
   @doc """
   Finishes the match and sets the given player as the winner.
   """
-  @spec finish_match(Match.t(), String.t()) :: atom
+  @spec finish_match(Match.t(), String.t()) :: tuple
   def finish_match(%Match{ping_id: ping_id, pong_id: pong_id} = match, player) do
     {{id, result}, _} =
       Code.eval_string player,
@@ -237,7 +239,10 @@ defmodule PingPong.Matches do
     Accounts.set_rating(ping_id, ping_rating_new)
     Accounts.set_rating(pong_id, pong_rating_new)
 
-    :ok
+    {:ok, %Match{}} =
+      Matches.create_match(%{
+        rule_id: 1
+      })
   end
 
   # def inspect_match(id) do

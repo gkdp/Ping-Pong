@@ -82,8 +82,7 @@ class Match extends React.Component {
 
         setSpeech().then((voices) => {
           var msg = new SpeechSynthesisUtterance();
-          console.log(voices)
-          msg.voice = voices[60];
+          msg.voice = voices[0];
           msg.text = `${this.props.game.players[this.props.game.serving].name} heeft nu opslag!`;
 
           speechSynthesis.speak(msg)
