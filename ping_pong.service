@@ -1,0 +1,12 @@
+[Unit]
+Description=Ping Pong
+After=network.target
+
+[Service]
+Restart=on-failure
+Environment=MIX_ENV=rpi
+WorkingDirectory=/home/pi/Projects/Ping-Pong
+ExecStart=/usr/bin/mix phx.server
+
+[Install]
+WantedBy=multi-user.target
