@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Restart=on-failure
 Environment=MIX_ENV=rpi
+Environment=HOME=/root
 WorkingDirectory=/home/pi/Projects/Ping-Pong
 ExecStart=/usr/bin/mix phx.server
 
